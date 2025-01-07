@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>View Images</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+    <style>
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .view-product-btn {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        .delete-btn {
+            padding: 8px 16px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .image-item.deleted {
+            display: none;
+        }
+        .image-header {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+        }
+        .resolution {
+            font-size: 14px;
+            font-family: monospace;
+        }
+        .image-item {
+            position: relative;
+        }
+                /* Existing styles */
+        .button-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .view-product-btn {
+            padding: 8px 16px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+        }
+        .delete-btn {
+            padding: 8px 16px;
+            background-color: #f44336;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            width: 100%;
+        }
+        .image-item.deleted {
+            display: none;
+        }
+        .image-header {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 5px 10px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1;
+        }
+        .resolution {
+            font-size: 14px;
+            font-family: monospace;
+        }
+        .image-item {
+            position: relative;
+        }
+
+                /* New styles for selection tracker */
+        .selection-tracker {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: #2d2d2d;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            width: 150px;
+        }
+
+        .selection-tracker h3 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #2196F3;
+            font-size: 16px;
+            text-align: center;
+        }
+
+        .selection-group {
+            margin-bottom: 15px;
+        }
+
+        .selection-group h4 {
+            margin: 0 0 8px 0;
+            color: #90caf9;
+            font-size: 14px;
+        }
+
+        .selection-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .selection-item span {
+            margin-left: 8px;
+            font-size: 14px;
+            color: #e0e0e0;
+        }
+
+        .selection-item input[type="checkbox"] {
+            pointer-events: none;
+            accent-color: #2196F3;
+        }
+
+        /* Adjust main content to make space for tracker */
+        .container {
+            margin-left: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Annopett Links Workspace</h1>
+        <h2>Product Name: {{ product_name }}</h2>
+        <div class="button-container">
+            <h3>Images for Row {{ current_row }}</h3>
+            <a href="{{ links[0] }}" target="_blank" class="view-product-btn">View Product</a>
+        </div>
+        <form action="/view_images" method="POST">
+            <div class="image-gallery">
+                {% for image_url, dimensions in images %}
+                    <div class="image-item">
+                        <div class="image-header">
+                            <span class="resolution">Resolution: {{ dimensions }}</span>
+                        </div>
+                        <img src="{{ image_url }}" alt="Image" class="image">
+                        <div class="checkbox-container">
+                            <label><input type="checkbox" name="{{ image_url }}|{{ dimensions }}" value="p1"> P1</label>
+                            <label><input type="checkbox" name="{{ image_url }}|{{ dimensions }}" value="p2"> P2</label>
+                            <label><input type="checkbox" name="{{ image_url }}|{{ dimensions }}" value="p3"> P3</label>
+                            <label><input type="checkbox" name="{{ image_url }}|{{ dimensions }}" value="p4"> P4</label>
+                            <label><input type="checkbox" name="{{ image_url }}|{{ dimensions }}" value="p5"> P5</label>
+                            <label><input type="checkbox" name="{{ image_url }}|{{ dimensions }}" value="l1"> L1</label>
+                            <label><input type="checkbox" name="{{ image_url }}|{{ dimensions }}" value="l2"> L2</label>
+                            <label><input type="checkbox" name="{{ image_url }}|{{ dimensions }}" value="l3"> L3</label>
+                            <label><input type="checkbox" name="{{ image_url }}|{{ dimensions }}" value="l4"> L4</label>
+                            <label><input type="checkbox" name="{{ image_url }}|{{ dimensions }}" value="l5"> L5</label>
+                        </div>
+                        <button type="button" class="delete-btn">Delete Image</button>
+                    </div>
+                {% endfor %}
+            </div>
+            <button type="submit">Next</button>
+            <div class="navigation">
+                <label for="row_navigation">Go to Row (optional):</label>
+                <input type="text" id="row_navigation" name="row_navigation" placeholder="Row number">
+                <button type="submit" name="navigate_to_row">Go</button>
+            </div>
+        </form>
+        <div class="navigation-buttons">
+            <a href="{{ url_for('view_images', action='back') }}" class="button">Back</a>
+        </div>
+        <!-- Delete Product Button -->
+        <form action="{{ url_for('delete_product') }}" method="POST" style="display:inline;">
+            <button type="submit" class="btn btn-danger" style="margin-top: 10px;">
+                Delete Product URL
+            </button>
+        </form>
+    </div>
+
+    <!-- Selection Tracker -->
+    <div class="selection-tracker">
+        <h3>Selection Status</h3>
+        <div class="selection-group">
+            <h4>Primary Images</h4>
+            <div class="selection-item">
+                <input type="checkbox" id="tracker-p1" disabled>
+                <span>P1</span>
+            </div>
+            <div class="selection-item">
+                <input type="checkbox" id="tracker-p2" disabled>
+                <span>P2</span>
+            </div>
+            <div class="selection-item">
+                <input type="checkbox" id="tracker-p3" disabled>
+                <span>P3</span>
+            </div>
+            <div class="selection-item">
+                <input type="checkbox" id="tracker-p4" disabled>
+                <span>P4</span>
+            </div>
+            <div class="selection-item">
+                <input type="checkbox" id="tracker-p5" disabled>
+                <span>P5</span>
+            </div>
+        </div>
+        <div class="selection-group">
+            <h4>Lifestyle Images</h4>
+            <div class="selection-item">
+                <input type="checkbox" id="tracker-l1" disabled>
+                <span>L1</span>
+            </div>
+            <div class="selection-item">
+                <input type="checkbox" id="tracker-l2" disabled>
+                <span>L2</span>
+            </div>
+            <div class="selection-item">
+                <input type="checkbox" id="tracker-l3" disabled>
+                <span>L3</span>
+            </div>
+            <div class="selection-item">
+                <input type="checkbox" id="tracker-l4" disabled>
+                <span>L4</span>
+            </div>
+            <div class="selection-item">
+                <input type="checkbox" id="tracker-l5" disabled>
+                <span>L5</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageItems = document.querySelectorAll('.image-item');
+
+            function updateSelectionTracker() {
+                // Reset all tracker checkboxes
+                document.querySelectorAll('.selection-tracker input[type="checkbox"]').forEach(box => {
+                    box.checked = false;
+                });
+
+                // Check which options are selected
+                imageItems.forEach(item => {
+                    if (!item.classList.contains('deleted')) {
+                        item.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                            if (checkbox.checked) {
+                                const trackerId = `tracker-${checkbox.value}`;
+                                const trackerCheckbox = document.getElementById(trackerId);
+                                if (trackerCheckbox) {
+                                    trackerCheckbox.checked = true;
+                                }
+                            }
+                        });
+                    }
+                });
+            }
+
+            imageItems.forEach(imageItem => {
+                const checkboxes = imageItem.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            checkboxes.forEach(otherCheckbox => {
+                                if (otherCheckbox !== checkbox) {
+                                    otherCheckbox.checked = false;
+                                }
+                            });
+                        }
+                        updateSelectionTracker();
+                    });
+                });
+
+                const deleteBtn = imageItem.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', () => {
+                    imageItem.classList.add('deleted');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                    updateSelectionTracker();
+                });
+            });
+
+            // Initial update of tracker
+            updateSelectionTracker();
+        });
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const imageItems = document.querySelectorAll('.image-item');
+            imageItems.forEach(imageItem => {
+                const checkboxes = imageItem.querySelectorAll('input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        if (checkbox.checked) {
+                            checkboxes.forEach(otherCheckbox => {
+                                if (otherCheckbox !== checkbox) {
+                                    otherCheckbox.checked = false;
+                                }
+                            });
+                        }
+                    });
+                });
+
+                const deleteBtn = imageItem.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', () => {
+                    imageItem.classList.add('deleted');
+                    checkboxes.forEach(checkbox => {
+                        checkbox.checked = false;
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
